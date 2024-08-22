@@ -38,6 +38,7 @@ class Exp {
 public:
     virtual void print() = 0;
     virtual void printpolaca() = 0;
+    virtual void bytecode() = 0;
     virtual int eval() = 0;
     virtual ~Exp() = 0;
     static char binopToChar(BinaryOp op);
@@ -51,6 +52,7 @@ public:
     BinaryExp(Exp* l, Exp* r, BinaryOp op);
     void print();
     void printpolaca();
+    void bytecode();
     int eval();
     ~BinaryExp();
 };
@@ -61,6 +63,7 @@ public:
     NumberExp(int v);
     void print();
     void printpolaca();
+    void bytecode();
     int eval();
     ~NumberExp();
 };
@@ -276,6 +279,21 @@ void BinaryExp::printpolaca(){
     cout << binopToChar(this->op);
 }
 
+void BinaryExp::bytecode(){
+    left->bytecode();
+    right->bytecode();
+    switch(this->op) {
+        case PLUS: cout << "iadd" << endl; break;
+        case MINUS: cout << "isub" << endl; break;
+        case MUL: cout << "imul" << endl; break;
+        case DIV: cout << "idiv" << endl; break;
+    }
+}
+
+void NumberExp::bytecode(){
+    cout << "iconst_" << value << endl;
+}
+
 void NumberExp::print() {
     cout << value;
 }
@@ -341,6 +359,10 @@ int main(int argc, const char* argv[]) {
 
     cout << "expr RPN: ";
     exp->printpolaca();
+    cout << endl;
+
+    cout << "expr bytecode: " << endl;
+    exp->bytecode();
     cout << endl;
 
     cout << "eval: ";
