@@ -1,6 +1,3 @@
-// Ejercicio elaborado por el profesor Igor Siveroni //
-
-
 #include <sstream>
 #include <iostream>
 #include <stdlib.h>
