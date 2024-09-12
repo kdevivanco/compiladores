@@ -86,6 +86,26 @@ Token::Token(Type type, const string& source, int first, int last):type(type) {
     text = source.substr(first,last);
 }
 
+class Stm {
+public:
+    virtual void execute() = 0;
+    virtual ~Stm() = 0;
+};
+
+
+class AssignStatement : public Stm {
+private:
+    string id;
+    Exp* rhs;
+public:
+    AssignStatement(const string& id, Exp* rhs);
+    void execute();
+    ~AssignStatement();
+};
+
+
+
+
 
 
 std::ostream& operator << ( std::ostream& outs, const Token & tok )

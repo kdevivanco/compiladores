@@ -12,7 +12,7 @@ using namespace std;
 // Clases //
 class Token {
 public:
-    enum Type {PLUS_TK, MINUS_TK, MUL_TK, DIV_TK, NUM_TK, ERR_TK, END_TK, PO_TK, PC_TK, POW_TK};
+    enum Type {PLUS_TK, MINUS_TK, MUL_TK, DIV_TK, NUM_TK, ERR_TK, END_TK, PO_TK, PC_TK, POW_TK}; //Agregamos POW_tk
     Type type;
     string text;
     Token(Type);
@@ -191,8 +191,8 @@ Parser::Parser(Scanner* sc):scanner(sc) {
 Exp* Parser::parseFexp() {
     Exp* left = parseFactor();
     if (match(Token::POW_TK)) {
-        Exp* right = parseFexp(); // Recursividad para manejar la asociatividad derecha.
-        left = new BinaryExp(left, right, POW); // Necesitas definir el operador POW en BinaryOp.
+        Exp* right = parseFexp(); // Asocatividad derecha 
+        left = new BinaryExp(left, right, POW); 
     }
     return left;
 }
@@ -231,7 +231,7 @@ Exp* Parser::parseExpression() {
 
 
 Exp* Parser::parseTerm() {
-    Exp* left = parseFexp(); // Cambiado de parseFactor a parseFexp
+    Exp* left = parseFexp(); // cambiado a parseFexp
 
     while (match(Token::MUL_TK) || match(Token::DIV_TK)) {
         BinaryOp op;
@@ -241,7 +241,7 @@ Exp* Parser::parseTerm() {
         else if (previous->type == Token::DIV_TK){
             op = DIV;
         }
-        Exp* right = parseFexp(); // Cambiado de parseFactor a parseFexp
+        Exp* right = parseFexp(); // actualizado a parse Fexp
         left = new BinaryExp(left, right, op);
     }
     return left;
@@ -334,7 +334,7 @@ int BinaryExp::eval() {
         case MINUS: result = v1 - v2; break;
         case MUL: result = v1 * v2; break;
         case DIV: result = v1 / v2; break;
-        case POW: result = pow(v1, v2); break; // Usar la función `pow` de <cmath>
+        case POW: result = pow(v1, v2); break; // funcion pow de cmath
         default:
             cout << "Operador desconocido" << endl;
             result = 0;
