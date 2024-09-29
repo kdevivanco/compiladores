@@ -40,6 +40,18 @@ public:
     static char binopToChar(BinaryOp op);
 };
 
+class CExp : public Exp {
+public:
+    Exp* left;
+    Exp* right;
+    std::string op;  // Operador relacional: "<", "<=", "=="
+
+    CExp(Exp* l, const std::string& op, Exp* r);
+    int accept(Visitor* visitor) override;
+    ~CExp();
+};
+
+
 class BinaryExp : public Exp {
 public:
     Exp *left, *right;
@@ -257,11 +269,13 @@ bool Parser::check(Token::Type ttype) {
 
 bool Parser::advance() {
     if (!isAtEnd()) {
+
         Token* temp = current;
         if (previous) delete previous;
         current = scanner->nextToken();
         previous = temp;
         if (check(Token::ERR)) {
+            cout << "Error debug: " <<  current -> text << endl; 
             cout << "Error de análisis, carácter no reconocido: " << current->text << endl;
             exit(1);
         }
@@ -331,7 +345,6 @@ Stm* Parser::parseStatement() {
     // is token if??
     else if (match(Token::IF)) {
         Exp* condition = parseExpression(); // parseo a condicional 
-
         if (!match(Token::THEN)) {
             throw std::runtime_error("Error: se esperaba 'then' después de la condición.");
         }
@@ -693,6 +706,17 @@ void EVALVisitor::visit(IfStatement* stm) {
     }
 }
 
+//Nuevo CExp: 
+CExp::CExp(Exp* l, const std::string& op, Exp* r) : left(l), op(op), right(r) {}
+
+CExp::~CExp() {
+    delete left;
+    delete right;
+}
+
+int CExp::accept(Visitor* visitor) {
+    return visitor->visit(this);  // Necesitamos agregar un método en el visitor para CExp
+}
 
 
 

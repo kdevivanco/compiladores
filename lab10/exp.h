@@ -7,6 +7,8 @@
 #include "visitor.h"
 
 using namespace std; 
+
+
 enum BinaryOp { PLUS_OP, MINUS_OP, MUL_OP, DIV_OP };
 
 class Exp {
@@ -82,6 +84,18 @@ public:
     IfStatement(Exp* cond, list<Stm*> thenL, list<Stm*> elseL);
     int accept(Visitor* visitor);
     ~IfStatement();
+};
+
+//Nueva clase CExp:
+class CExp : public Exp {
+public:
+    Exp* left;
+    Exp* right;
+    std::string op;  // Operador relacional: "<", "<=", "=="
+
+    CExp(Exp* l, const std::string& op, Exp* r);
+    int accept(Visitor* visitor) override;
+    ~CExp();
 };
 
 

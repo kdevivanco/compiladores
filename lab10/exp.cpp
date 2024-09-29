@@ -53,3 +53,15 @@ int IfStatement::accept(Visitor* visitor) {
     return 0;
 }
 
+
+
+CExp::CExp(Exp* l, const std::string& op, Exp* r) : left(l), op(op), right(r) {}
+
+CExp::~CExp() {
+    delete left;
+    delete right;
+}
+
+int CExp::accept(Visitor* visitor) {
+    return visitor->visit(this);  // Necesitamos agregar un método en el visitor para CExp
+}

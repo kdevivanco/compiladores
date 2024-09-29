@@ -145,6 +145,31 @@ void EVALVisitor::visit(IfStatement* stm) {
     }
 }
 
+// Para CEXP:
+int PrintVisitor::visit(CExp* exp) {
+    exp->left->accept(this);
+    cout << " " << exp->op << " ";
+    exp->right->accept(this);
+    return 0;
+}
+
+int EVALVisitor::visit(CExp* exp) {
+    int leftValue = exp->left->accept(this);
+    int rightValue = exp->right->accept(this);
+
+    if (exp->op == "<") {
+        return leftValue < rightValue;
+    } else if (exp->op == "<=") {
+        return leftValue <= rightValue;
+    } else if (exp->op == "==") {
+        return leftValue == rightValue;
+    } else {
+        cout << "Operador relacional desconocido: " << exp->op << endl;
+        return 0;
+    }
+}
+
+
 
 
 

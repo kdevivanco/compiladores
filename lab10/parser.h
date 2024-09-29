@@ -15,6 +15,7 @@ private:
     Exp* parseExpression();
     Exp* parseTerm();
     Exp* parseFactor();
+    Exp* parseCExp();
 public:
     Parser(Scanner* scanner);
     Program* parseProgram();

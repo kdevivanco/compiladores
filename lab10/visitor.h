@@ -12,6 +12,7 @@ class Program;
 class IfStatement;
 
 //Se agrega visit if statement a cada clase de visitor 
+// Se agrega visit Cexpresion 
 class Visitor {
 public:
     virtual int visit(BinaryExp* exp) = 0;
@@ -20,6 +21,7 @@ public:
     virtual void visit(AssignStatement* stm) = 0;
     virtual void visit(PrintStatement* stm) = 0;
     virtual void visit (IfStatement* stm) = 0; 
+    virtual int visit(CExp* exp) = 0; 
 };
 
 class PrintVisitor : public Visitor {
@@ -31,6 +33,8 @@ public:
     void visit(AssignStatement* stm) override;
     void visit(PrintStatement* stm) override;
     void visit(IfStatement* stm) override;
+    int visit(CExp* exp) override;
+
 };
 
 class EVALVisitor : public Visitor {
@@ -42,6 +46,7 @@ public:
     void visit(AssignStatement* stm) override;
     void visit(PrintStatement* stm) override;
     void visit(IfStatement* stm) override;
+    int visit(CExp* exp) override;
 
 };
 

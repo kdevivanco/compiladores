@@ -72,43 +72,38 @@ Stm* Parser::parseStatement() {
     Stm* s = nullptr;
     Exp* e = nullptr;
 
-    // 
     if (match(Token::ID)) {
         std::string lex = previous->text;
 
         if (!match(Token::ASSIGN)) {
             throw std::runtime_error("Error: se esperaba un '=' después del identificador.");
         }
-        e = parseExpression();
+        e = parseCExp();  // Usa parseCExp para permitir expresiones condicionales
         s = new AssignStatement(lex, e);
     } 
-    
     else if (match(Token::PRINT)) {
-        if (!match(Token::PI)) { // '(' después de 'print'
+        if (!match(Token::PI)) {
             throw std::runtime_error("Error: se esperaba un '(' después de 'print'.");
         }
-        e = parseExpression();
-        if (!match(Token::PD)) { // ')' despues de la expresion
+        e = parseCExp();  // Usa parseCExp para permitir expresiones condicionales
+        if (!match(Token::PD)) {
             throw std::runtime_error("Error: se esperaba un ')' después de la expresión.");
         }
         s = new PrintStatement(e);
     } 
-    // is token if??
     else if (match(Token::IF)) {
-        Exp* condition = parseExpression(); // parseo a condicional 
+        Exp* condition = parseCExp();  // Condición ahora puede ser una CExp
 
         if (!match(Token::THEN)) {
             throw std::runtime_error("Error: se esperaba 'then' después de la condición.");
         }
 
-        // parse de declaracions dentro del then
         std::list<Stm*> thenList;
-        thenList.push_back(parseStatement()); // Parsear al menos una declaración
+        thenList.push_back(parseStatement());
         while (!isAtEnd() && !match(Token::ENDIF) && !check(Token::ELSE)) {
             thenList.push_back(parseStatement());
         }
 
-        // parseo de declaraciones dentro del else
         std::list<Stm*> elseList;
         if (match(Token::ELSE)) {
             elseList.push_back(parseStatement());
@@ -117,14 +112,12 @@ Stm* Parser::parseStatement() {
             }
         }
 
-        //Error, no encontramos endif 
         if (!match(Token::ENDIF)) {
             throw std::runtime_error("Error: se esperaba 'endif' al final del bloque 'if'.");
         }
 
         s = new IfStatement(condition, thenList, elseList);
     } 
-    // token inesperado ---> ERROR 
     else {
         throw std::runtime_error("Error: se esperaba un identificador, 'print' o 'if', pero se encontró: " + current->text);
     }
@@ -185,3 +178,17 @@ Exp* Parser::parseFactor() {
     exit(0);
 }
 
+
+
+Exp* Parser::parseCExp() {
+    Exp* left = parseExpression();  // Primero parsea una expresión normal
+
+    // Verifica si hay un operador relacional
+    if (match(Token::LT) || match(Token::LEQ) || match(Token::EQ)) {
+        std::string op = previous->text;  // Guarda el operador relacional
+        Exp* right = parseExpression();   // Parsea la expresión de la derecha
+        return new CExp(left, op, right);  // Devuelve un CExp
+    }
+
+    return left;  // Si no hay operador relacional, simplemente devuelve la expresión
+}
