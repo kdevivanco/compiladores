@@ -1,0 +1,56 @@
+Iniciando Scanner:
+
+TOKEN(ID)
+TOKEN(ASSIGN)
+TOKEN(NUM)
+TOKEN(PC)
+TOKEN(ID)
+TOKEN(ASSIGN)
+TOKEN(NUM)
+TOKEN(PC)
+TOKEN(ID)
+TOKEN(ASSIGN)
+TOKEN(ID)
+TOKEN(PLUS)
+TOKEN(ID)
+TOKEN(PC)
+TOKEN(IF)
+TOKEN(PI)
+TOKEN(ID)
+TOKEN(EQ)
+TOKEN(PI)
+TOKEN(ID)
+TOKEN(PLUS)
+TOKEN(ID)
+TOKEN(PD)
+TOKEN(PD)
+TOKEN(THEN)
+TOKEN(PRINT)
+TOKEN(PI)
+TOKEN(NUM)
+TOKEN(PD)
+TOKEN(ELSE)
+TOKEN(PRINT)
+TOKEN(PI)
+TOKEN(NUM)
+TOKEN(PD)
+TOKEN(ENDIF)
+TOKEN(END)
+Scanner exitoso
+
+Iniciando parsing:
+Parsing exitoso
+
+Iniciando Visitor:
+IMPRIMIR:
+x = 100;
+y = 200;
+z = x + y;
+if z == x + y then
+print(1);
+else
+print(0);
+endif
+
+EJECUTAR:
+1

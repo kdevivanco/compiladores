@@ -1,0 +1,1 @@
+a = 5; b = 6; if a == b then print(1) else print(0) endif
