@@ -9,7 +9,7 @@ class IdentifierExp;
 class AssignStatement;
 class PrintStatement;
 class Program;
-
+class IfStatement;
 
 //Se agrega visit if statement a cada clase de visitor 
 class Visitor {

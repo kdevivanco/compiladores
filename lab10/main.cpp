@@ -1,9 +1,11 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "../../AppData/Local/Temp/scanner.h"
-#include "../../AppData/Local/Temp/parser.h"
-#include "../../AppData/Local/Temp/visitor.h"
+#include "scanner.h"
+#include "parser.h"
+#include "visitor.h"
+#include "exp.h"
+#include "token.h"
 
 using namespace std;
 

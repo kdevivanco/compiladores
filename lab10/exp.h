@@ -6,6 +6,7 @@
 #include <list>
 #include "visitor.h"
 
+using namespace std; 
 enum BinaryOp { PLUS_OP, MINUS_OP, MUL_OP, DIV_OP };
 
 class Exp {
@@ -74,11 +75,11 @@ public:
 //Nueva clase if statement 
 class IfStatement : public Stm {
 public:
-    CExp* condition;      // Expression condicional
+    Exp* condition;      // Expression condicional
     list<Stm*> thenList;   // Lista de sentencias para 'then'
     list<Stm*> elseList;   // Lista de sentencias para 'else'
     
-    IfStatement(CExp* cond, list<Stm*> thenL, list<Stm*> elseL);
+    IfStatement(Exp* cond, list<Stm*> thenL, list<Stm*> elseL);
     int accept(Visitor* visitor);
     ~IfStatement();
 };
