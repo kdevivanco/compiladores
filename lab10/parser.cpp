@@ -95,7 +95,7 @@ Stm* Parser::parseStatement() {
     } 
     // is token if??
     else if (match(Token::IF)) {
-        Exp* condition = parseCExp(); // parseo a condicional 
+        Exp* condition = parseExpression(); // parseo a condicional 
 
         if (!match(Token::THEN)) {
             throw std::runtime_error("Error: se esperaba 'then' después de la condición.");

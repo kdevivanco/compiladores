@@ -6,7 +6,7 @@
 class Token {
 public:
     enum Type {
-        PLUS, MINUS, MUL, DIV, NUM, ERR, PD, PI, END, ID, PRINT, ASSIGN, PC,  IF, ELSE, ENDIF, LT, LEQ, EQ
+        PLUS, MINUS, MUL, DIV, NUM, ERR, PD, PI, END, ID, PRINT, ASSIGN, PC,  IF, ELSE, ENDIF, LT, LEQ, EQ, THEN
     };
 
     Type type;

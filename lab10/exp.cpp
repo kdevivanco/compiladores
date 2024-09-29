@@ -39,7 +39,7 @@ char Exp::binopToChar(BinaryOp op) {
 }
 
 //nuevos metodos IfStatement
-IfStatement::IfStatement(CExp* cond, list<Stm*> thenL, list<Stm*> elseL) 
+IfStatement::IfStatement(Exp* cond, list<Stm*> thenL, list<Stm*> elseL) 
     : condition(cond), thenList(thenL), elseList(elseL) {}
 
 IfStatement::~IfStatement() {
