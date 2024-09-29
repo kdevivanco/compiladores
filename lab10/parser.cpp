@@ -63,43 +63,75 @@ Program* Parser::parseProgram() {
         exit(1);
     }
     return p;
-}
+}\
+
+
+//Modificacion a parser: 
 
 Stm* Parser::parseStatement() {
-    Stm* s = NULL;
-    Exp* e;
-    
-    if (current == NULL) {
-        cout << "Error: Token actual es NULL" << endl;
-        exit(1);
-    }
-    
+    Stm* s = nullptr;
+    Exp* e = nullptr;
+
+    // 
     if (match(Token::ID)) {
-        string lex = previous->text;
-        
+        std::string lex = previous->text;
+
         if (!match(Token::ASSIGN)) {
-            cout << "Error: se esperaba un '=' después del identificador." << endl;
-            exit(1);
+            throw std::runtime_error("Error: se esperaba un '=' después del identificador.");
         }
         e = parseExpression();
         s = new AssignStatement(lex, e);
-    } else if (match(Token::PRINT)) {
-        if (!match(Token::PI)) {
-            cout << "Error: se esperaba un '(' después de 'print'." << endl;
-            exit(1);
+    } 
+    
+    else if (match(Token::PRINT)) {
+        if (!match(Token::PI)) { // '(' después de 'print'
+            throw std::runtime_error("Error: se esperaba un '(' después de 'print'.");
         }
         e = parseExpression();
-        if (!match(Token::PD)) {
-            cout << "Error: se esperaba un ')' después de la expresión." << endl;
-            exit(1);
+        if (!match(Token::PD)) { // ')' despues de la expresion
+            throw std::runtime_error("Error: se esperaba un ')' después de la expresión.");
         }
         s = new PrintStatement(e);
-    } else {
-        cout << "Error: Se esperaba un identificador o 'print', pero se encontró: " << *current << endl;
-        exit(1);
+    } 
+    // is token if??
+    else if (match(Token::IF)) {
+        Exp* condition = parseCExp(); // parseo a condicional 
+
+        if (!match(Token::THEN)) {
+            throw std::runtime_error("Error: se esperaba 'then' después de la condición.");
+        }
+
+        // parse de declaracions dentro del then
+        std::list<Stm*> thenList;
+        thenList.push_back(parseStatement()); // Parsear al menos una declaración
+        while (!isAtEnd() && !match(Token::ENDIF) && !check(Token::ELSE)) {
+            thenList.push_back(parseStatement());
+        }
+
+        // parseo de declaraciones dentro del else
+        std::list<Stm*> elseList;
+        if (match(Token::ELSE)) {
+            elseList.push_back(parseStatement());
+            while (!isAtEnd() && !match(Token::ENDIF)) {
+                elseList.push_back(parseStatement());
+            }
+        }
+
+        //Error, no encontramos endif 
+        if (!match(Token::ENDIF)) {
+            throw std::runtime_error("Error: se esperaba 'endif' al final del bloque 'if'.");
+        }
+
+        s = new IfStatement(condition, thenList, elseList);
+    } 
+    // token inesperado ---> ERROR 
+    else {
+        throw std::runtime_error("Error: se esperaba un identificador, 'print' o 'if', pero se encontró: " + current->text);
     }
+
     return s;
 }
+
 
 Exp* Parser::parseExpression() {
     Exp* left = parseTerm();
