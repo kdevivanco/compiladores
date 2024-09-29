@@ -37,3 +37,19 @@ char Exp::binopToChar(BinaryOp op) {
     }
     return c;
 }
+
+//nuevos metodos IfStatement
+IfStatement::IfStatement(CExp* cond, list<Stm*> thenL, list<Stm*> elseL) 
+    : condition(cond), thenList(thenL), elseList(elseL) {}
+
+IfStatement::~IfStatement() {
+    delete condition;
+    for (Stm* s : thenList) delete s;
+    for (Stm* s : elseList) delete s;
+}
+
+int IfStatement::accept(Visitor* visitor) {
+    visitor->visit(this);
+    return 0;
+}
+

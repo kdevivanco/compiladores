@@ -71,4 +71,18 @@ public:
     ~Program();
 };
 
+//Nueva clase if statement 
+class IfStatement : public Stm {
+public:
+    CExp* condition;      // Expression condicional
+    list<Stm*> thenList;   // Lista de sentencias para 'then'
+    list<Stm*> elseList;   // Lista de sentencias para 'else'
+    
+    IfStatement(CExp* cond, list<Stm*> thenL, list<Stm*> elseL);
+    int accept(Visitor* visitor);
+    ~IfStatement();
+};
+
+
 #endif // EXP_H
+
