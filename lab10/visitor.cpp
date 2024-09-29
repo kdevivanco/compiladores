@@ -110,3 +110,41 @@ void EVALVisitor::ejecutar(Program* program){
         s->accept(this);
     }
 };
+
+// Print visitor para if statement: 
+void PrintVisitor::visit(IfStatement* stm) {
+    cout << "if ";
+    stm->condition->accept(this);
+    cout << " then" << endl;
+    for (Stm* s : stm->thenList) {
+        s->accept(this);
+        cout << endl;
+    }
+    if (!stm->elseList.empty()) {
+        cout << "else" << endl;
+        for (Stm* s : stm->elseList) {
+            s->accept(this);
+            cout << endl;
+        }
+    }
+    cout << "endif";
+}
+
+//Eval Visitor 
+
+void EVALVisitor::visit(IfStatement* stm) {
+    int cond = stm->condition->accept(this);
+    if (cond) {
+        for (Stm* s : stm->thenList) {
+            s->accept(this);
+        }
+    } else {
+        for (Stm* s : stm->elseList) {
+            s->accept(this);
+        }
+    }
+}
+
+
+
+

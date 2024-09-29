@@ -10,6 +10,8 @@ class AssignStatement;
 class PrintStatement;
 class Program;
 
+
+//Se agrega visit if statement a cada clase de visitor 
 class Visitor {
 public:
     virtual int visit(BinaryExp* exp) = 0;
@@ -17,6 +19,7 @@ public:
     virtual int visit(IdentifierExp* exp) = 0;
     virtual void visit(AssignStatement* stm) = 0;
     virtual void visit(PrintStatement* stm) = 0;
+    virtual void visit (IfStatement* stm) = 0; 
 };
 
 class PrintVisitor : public Visitor {
@@ -27,6 +30,7 @@ public:
     int visit(IdentifierExp* exp) override;
     void visit(AssignStatement* stm) override;
     void visit(PrintStatement* stm) override;
+    void visit(IfStatement* stm) override;
 };
 
 class EVALVisitor : public Visitor {
@@ -37,6 +41,8 @@ public:
     int visit(IdentifierExp* exp) override;
     void visit(AssignStatement* stm) override;
     void visit(PrintStatement* stm) override;
+    void visit(IfStatement* stm) override;
+
 };
 
 #endif // VISITOR_H
