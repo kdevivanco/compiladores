@@ -1,0 +1,11 @@
+a = 5;
+b = 10;
+c = ((a + b) * (a - b)) / ((a + 1) * (b - 2));
+d = c + (a * b) - (a / b);
+e = d * (a + b) / (a - b);
+f = e + (a * b) - (a / b);
+g = f * (a + b) / (a - b);
+h = g + (a * b) - (a / b);
+i = h * (a + b) / (a - b);
+j = i + (a * b) - (a / b);
+print(j);
