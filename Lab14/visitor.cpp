@@ -2,8 +2,9 @@
 #include "exp.h"
 #include "visitor.h"
 #include <unordered_map>
+#include "scanner.h"
+#include "token.h"
 using namespace std;
-
 
 ///////////////////////////////////////////////////////////////////////////////////
 int BinaryExp::accept(Visitor* visitor) {
@@ -183,22 +184,21 @@ void PrintVisitor::visit(Body* stm){
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
+
+//enum BinaryOp { PLUS_OP, MINUS_OP, MUL_OP, DIV_OP,LT_OP, LE_OP, EQ_OP };
 int EVALVisitor::visit(BinaryExp* exp) {
     int left = exp->left->accept(this);
     int right = exp->right->accept(this);
-    switch(exp->op){
-        case '+': return left + right;
-        case '-': return left - right;
-        case '*': return left * right;
-        case '/': return left / right;
-        case '%': return left % right;
-        case '<': return left < right;
-        case '>': return left > right;
-        case '=': return left == right;
-        case '&': return left && right;
-        case '|': return left || right;
+    switch (exp->op) {
+        case PLUS_OP: return left + right;
+        case MINUS_OP: return left - right;
+        case MUL_OP: return left * right;
+        case DIV_OP: return left / right;
+        case LT_OP: return left < right;
+        case LE_OP: return left <= right;
+        case EQ_OP: return left == right;
+        default: return 0;
     }
-    return 0;
 }
 
 int EVALVisitor::visit(NumberExp* exp) {
@@ -210,15 +210,19 @@ int EVALVisitor::visit(BoolExp* exp) {
 }
 
 int EVALVisitor::visit(IdentifierExp* exp) {
-    return env[exp->name];
+    return env.lookup(exp->name);
 }
 
 void EVALVisitor::visit(AssignStatement* stm) {
-    env[stm->id] = stm->rhs->accept(this);
+    // lookup type:
+    auto value = stm->rhs->accept(this);
+    env.update(stm->id, value);
+
 }
 
 void EVALVisitor::visit(PrintStatement* stm) {
-    cout << stm->e->accept(this);
+    int value = stm->e->accept(this);
+    cout << value << endl;
 }
 
 void EVALVisitor::ejecutar(Program* program){
@@ -249,7 +253,11 @@ int EVALVisitor::visit(IFExp* pepito) {
 }
 
 void EVALVisitor::visit(ForStatement* stm){
-    for(int i = stm->start->accept(this); i <= stm->end->accept(this); i += stm->step->accept(this)){
+    int start = stm->start->accept(this);
+    int end = stm->end->accept(this);
+    int step = stm->step->accept(this);
+    for(int i = start; i <= end; i += step){
+//        env.add_var(,i, "int");
         stm->b->accept(this);
     }
 }
@@ -258,7 +266,7 @@ void EVALVisitor::visit(ForStatement* stm){
 
 void EVALVisitor::visit(VarDec* stm){
     for(auto i: stm->vars){
-        env[i] = 0;
+        env.add_var(i, stm->type);
     }
 }
 
@@ -275,8 +283,10 @@ void EVALVisitor::visit(StatementList* stm){
 }
 
 void EVALVisitor::visit(Body* b){
+    env.add_level();
     b->vardecs->accept(this);
     b->slist->accept(this);
+    env.remove_level();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -293,29 +303,21 @@ int TypeVisitor::visit(BinaryExp* exp) {
     int left = exp->left->accept(this);
     int right = exp->right->accept(this);
     if(left == 0 || right == 0) return 0;
-    if(left == 1 && right == 1){
-        if(exp->op == '+' || exp->op == '-' || exp->op == '*' || exp->op == '/' || exp->op == '%') return 1;
-        if(exp->op == '<' || exp->op == '>' || exp->op == '=') return 2;
-    }
-    if(left == 2 && right == 2){
-        if(exp->op == '&' || exp->op == '|') return 2;
-    }
+    if(left == 1 && right == 1) return 1;
+    if(left == 2 && right == 2) return 1;
     return 0;
 }
 
 int TypeVisitor::visit(NumberExp* exp) {
-
-
     return 1;
 }
 
 int TypeVisitor::visit(BoolExp* exp) {
-
     return 2;
 }
 
 int TypeVisitor::visit(IdentifierExp* exp) {
-    return env[exp->name];
+    return 0;
 }
 
 int TypeVisitor::visit(IFExp* exp) {
@@ -323,29 +325,26 @@ int TypeVisitor::visit(IFExp* exp) {
     int left = exp->left->accept(this);
     int right = exp->right->accept(this);
     if(cond == 2 && left == right) return left;
-    return 0;
+    else return 0;
 }
 
 void TypeVisitor::visit(AssignStatement* stm) {
-    int rhs = stm->rhs->accept(this);
-    if(env[stm->id] == 0) env[stm->id] = rhs;
-    else if(env[stm->id] != rhs) env[stm->id] = 0;
+    int value = stm->rhs->accept(this);
+
 }
 
 void TypeVisitor::visit(PrintStatement* stm) {
-    stm->e->accept(this);
+    int value = stm->e->accept(this);
 }
 
 void TypeVisitor::visit(IfStatement* stm) {
     int cond = stm->condition->accept(this);
-    if(cond != 2) return;
     stm->then->accept(this);
     if(stm->els) stm->els->accept(this);
 }
 
 void TypeVisitor::visit(WhileStatement* stm) {
     int cond = stm->condition->accept(this);
-    if(cond != 2) return;
     stm->b->accept(this);
 }
 
@@ -353,13 +352,12 @@ void TypeVisitor::visit(ForStatement* stm) {
     int start = stm->start->accept(this);
     int end = stm->end->accept(this);
     int step = stm->step->accept(this);
-    if(start != 1 || end != 1 || step != 1) return;
     stm->b->accept(this);
 }
 
 void TypeVisitor::visit(VarDec* stm) {
     for(auto i: stm->vars){
-        env[i] = stm->type == "int" ? 1 : 2;
+        env.add_var(i, stm->type);
     }
 }
 
@@ -376,6 +374,8 @@ void TypeVisitor::visit(StatementList* stm) {
 }
 
 void TypeVisitor::visit(Body* b) {
+    env.add_level();
     b->vardecs->accept(this);
     b->slist->accept(this);
+    env.remove_level();
 }
