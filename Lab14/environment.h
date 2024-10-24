@@ -126,6 +126,32 @@ public:
         }
         return true;
     }
+
+    //provide subscript operator for env[stm->id]
+    int& operator[](string x) {
+        int idx = search_rib(x);
+        if (idx < 0) {
+            cout << "Variable no declarada: " << x << endl;
+            exit(0);
+        }
+        return levels[idx][x];
+    }
+
+    //provide subscript operator for env[stm->id]
+    string& type_lookup(string x) {
+        int idx = search_rib(x);
+        if (idx < 0) {
+            cout << "Variable no declarada: " << x << endl;
+            exit(0);
+        }
+        return type_levels[idx][x];
+    }
+
+
+
+
+
+
 };
 
 #endif

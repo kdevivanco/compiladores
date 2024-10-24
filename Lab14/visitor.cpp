@@ -4,6 +4,7 @@
 #include <unordered_map>
 using namespace std;
 
+
 ///////////////////////////////////////////////////////////////////////////////////
 int BinaryExp::accept(Visitor* visitor) {
     return visitor->visit(this);
@@ -248,11 +249,7 @@ int EVALVisitor::visit(IFExp* pepito) {
 }
 
 void EVALVisitor::visit(ForStatement* stm){
-    int start = stm->start->accept(this);
-    int end = stm->end->accept(this);
-    int step = stm->step->accept(this);
-    for(int i = start; i <= end; i += step){
-        env[stm->id] = i;
+    for(int i = stm->start->accept(this); i <= stm->end->accept(this); i += stm->step->accept(this)){
         stm->b->accept(this);
     }
 }
@@ -362,7 +359,7 @@ void TypeVisitor::visit(ForStatement* stm) {
 
 void TypeVisitor::visit(VarDec* stm) {
     for(auto i: stm->vars){
-        env[i] = stm->type;
+        env[i] = stm->type == "int" ? 1 : 2;
     }
 }
 
