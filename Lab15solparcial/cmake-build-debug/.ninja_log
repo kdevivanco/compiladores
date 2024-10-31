@@ -1,0 +1,8 @@
+# ninja log v5
+1	1296	1730390907343934342	CMakeFiles/untitled1.dir/token.cpp.o	6fc7f7dc131e0d66
+1	1303	1730390907351160031	CMakeFiles/untitled1.dir/scanner.cpp.o	5969761d38a4dd77
+2	1595	1730390907626372306	CMakeFiles/untitled1.dir/visitor.cpp.o	1f71ae8716c62a5
+1	1664	1730390907710498439	CMakeFiles/untitled1.dir/parser.cpp.o	a012a8fd6dfd0254
+2	1665	1730390907710533355	CMakeFiles/untitled1.dir/exp.cpp.o	97162c9b14d47fe5
+1	1724	1730390907773152254	CMakeFiles/untitled1.dir/main.cpp.o	4d6d545f82c15572
+1724	1816	1730390907868730276	untitled1	2baae5593cf4d6a4

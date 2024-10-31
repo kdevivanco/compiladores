@@ -1,0 +1,14 @@
+var int a, b, c;
+var bool d, e;
+
+a = 1;
+b = 2;
+c = 3;
+d = true;
+e = false;
+
+print(a);
+print(b);
+print(c);
+print(d);
+print(e)

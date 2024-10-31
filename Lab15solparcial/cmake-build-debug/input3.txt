@@ -1,0 +1,7 @@
+var int a, b;
+
+a = 1;
+b = false;
+
+print (a);
+print (b)
