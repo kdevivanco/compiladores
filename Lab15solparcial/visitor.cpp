@@ -17,6 +17,7 @@ int NumberExp::accept(Visitor* visitor) {
 int FcallExp::accept(Visitor* visitor) {
     return visitor->visit(this);
 }
+
 int BoolExp::accept(Visitor* visitor) {
     return visitor->visit(this);
 }
@@ -191,3 +192,18 @@ void PrintVisitor::visit(Body* stm){
     cout << endl;
     stm->slist->accept(this);
 }
+
+
+void PrintVisitor::visit(ArgList* argList) {
+    std::cout << "(";
+    bool first = true;
+    for (Exp* arg : argList->args) {
+        if (!first) std::cout << ", ";
+        first = false;
+        arg->accept(this); // Imprime cada argumento usando el `visit` adecuado
+    }
+    std::cout << ")";
+}
+
+
+

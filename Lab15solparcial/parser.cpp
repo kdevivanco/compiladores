@@ -4,6 +4,7 @@
 #include "scanner.h"
 #include "exp.h"
 #include "parser.h"
+#include "arglist.h"
 
 using namespace std;
 
@@ -274,53 +275,72 @@ Exp* Parser::parseFactor() {
     Exp* e;
     Exp* e1;
     Exp* e2;
-    if (match(Token::TRUE)){
+
+    if (match(Token::TRUE)) {
         return new BoolExp(1);
-    }else if (match(Token::FALSE)){
+    } else if (match(Token::FALSE)) {
         return new BoolExp(0);
-    }
-    else if (match(Token::NUM)) {
+    } else if (match(Token::NUM)) {
         return new NumberExp(stoi(previous->text));
-    }
-    else if (match(Token::ID)) {
-        string nombre ;
-        nombre = previous->text;
-        if(match(Token::PI)){
-            Exp* e1;
+    } else if (match(Token::ID)) {
+        string nombre = previous->text;
+
+        if (match(Token::PI)) { // Llamada a función detectada
             FcallExp* fcall = new FcallExp();
-            e1 = parseCExp();
-            fcall->nombre =nombre;
-            fcall->entradas.push_back(e1);
-            while(match(Token::COMA)){
-                e1 = parseCExp();
-                fcall->entradas.push_back(e1);
+            ArgList argList; // Crear un ArgList temporal
+            fcall->nombre = nombre;
+
+            if (!match(Token::PD)) { // Verifica si hay argumentos
+                argList.addArgument(parseCExp()); // Primer argumento
+                while (match(Token::COMA)) { // Continúa con más argumentos si los hay
+                    argList.addArgument(parseCExp());
+                }
+                match(Token::PD); // Cierra paréntesis derecho
             }
-            match(Token::PD);
+
+            *fcall = argList; // Usa la sobrecarga de operador `=` para asignar los argumentos
             return fcall;
+        } else {
+            return new IdentifierExp(nombre); // Variable, no función
         }
-        else{
-            return new IdentifierExp(previous->text);
-        }
-    }
-    else if (match(Token::IFEXP)) {
+    } else if (match(Token::IFEXP)) {
         match(Token::PI);
-        e=parseCExp();
-        match(Token::COMA);
-        e1=parseCExp();
-        match(Token::COMA);
-        e2=parseCExp();
-        match(Token::PD);
-        return new IFExp(e,e1,e2);
-    }
-    else if (match(Token::PI)){
         e = parseCExp();
-        if (!match(Token::PD)){
+        match(Token::COMA);
+        e1 = parseCExp();
+        match(Token::COMA);
+        e2 = parseCExp();
+        match(Token::PD);
+        return new IFExp(e, e1, e2);
+    } else if (match(Token::PI)) {
+        e = parseCExp();
+        if (!match(Token::PD)) {
             cout << "Falta paréntesis derecho" << endl;
             exit(0);
         }
         return e;
     }
+
     cout << "Error: se esperaba un número o identificador." << endl;
     exit(0);
 }
+
+
+
+// Nuevos metodos para manejar ArgList:
+
+ArgList* Parser::parseArgList() {
+    ArgList* argList = new ArgList();
+
+    // Añadir el primer argumento
+    argList->addArgument(parseCExp());
+
+    // Continuar añadiendo argumentos mientras haya comas
+    while (match(Token::COMA)) {
+        argList->addArgument(parseCExp());
+    }
+
+    return argList;
+}
+
 

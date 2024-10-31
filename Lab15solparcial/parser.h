@@ -3,6 +3,7 @@
 
 #include "scanner.h"
 #include "exp.h"
+#include "arglist.h"
 
 class Parser {
 private:
@@ -25,6 +26,7 @@ public:
     VarDec* parseVarDec();
     VarDecList* parseVarDecList();
     Body* parseBody();
+    ArgList* parseArgList();
     
 };
 

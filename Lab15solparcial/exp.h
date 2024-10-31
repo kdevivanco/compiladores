@@ -5,10 +5,12 @@
 #include <unordered_map>
 #include <list>
 #include "visitor.h"
+#include "arglist.h"
 using namespace std;
 enum BinaryOp { PLUS_OP, MINUS_OP, MUL_OP, DIV_OP,LT_OP, LE_OP, EQ_OP };
 
 class Body;
+//class ArgList;
 
 class Exp {
 public:
@@ -24,13 +26,50 @@ public:
     ~IFExp();
 };
 
+class ArgList {
+public:
+    std::list<Exp*> args;
+
+    // Constructor vacío
+    ArgList() = default;
+
+    // Método para añadir un argumento
+    void addArgument(Exp* exp) {
+        args.push_back(exp);
+    }
+
+    // Método para aceptar el visitor
+    int accept(Visitor* visitor) {
+        for (Exp* arg : args) {
+            arg->accept(visitor); // Llama al visitor en cada argumento
+        }
+        return 0;
+    }
+
+    // Destructor para liberar memoria
+    ~ArgList() {
+        for (Exp* exp : args) {
+            delete exp;
+        }
+    }
+};
+
 class FcallExp : public Exp {
 public:
     string nombre;
     list<Exp* > entradas;
     int accept(Visitor* visitor);
     FcallExp();
-    ~FcallExp();
+    // Sobrecarga de operador `=` para aceptar ArgList
+    FcallExp& operator=(const ArgList& argList);
+
+    // Destructor para liberar memoria en `entradas`
+    ~FcallExp() {
+        for (Exp* exp : entradas) {
+            delete exp;
+        }
+    }
+//    ~FcallExp();
 };
 class BinaryExp : public Exp {
 public:
@@ -163,6 +202,8 @@ public:
     Program(Body* body);
     ~Program();
 };
+
+
 
 
 

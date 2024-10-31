@@ -20,6 +20,8 @@ class VarDecList;
 class StatementList;
 class Body;
 class Program;
+class ArgList;
+
 
 class Visitor {
 public:
@@ -38,6 +40,8 @@ public:
     virtual void visit(VarDecList* stm) = 0;
     virtual void visit(StatementList* stm) = 0;
     virtual void visit(Body* b) = 0;
+    virtual void visit(ArgList* argList) = 0; // Declaración de visit para ArgList
+
 };
 
 class PrintVisitor : public Visitor {
@@ -58,6 +62,7 @@ public:
     void visit(VarDecList* stm) override;
     void visit(StatementList* stm) override;
     void visit(Body* b) override;
+    void visit(ArgList* argList) override; // Declaración de visit para ArgList
 };
 
 

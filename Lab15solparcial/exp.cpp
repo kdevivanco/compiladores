@@ -12,7 +12,13 @@ BinaryExp::BinaryExp(Exp* l, Exp* r, BinaryOp op):left(l),right(r),op(op) {
 NumberExp::NumberExp(int v):value(v) {}
 BoolExp::BoolExp(bool v):value(v) {}
 FcallExp::FcallExp(){}
-FcallExp::~FcallExp(){}
+//FcallExp::FcallExp& operator=(const ArgList& argList);
+//operator overload:
+ FcallExp& FcallExp::operator=( const ArgList& argList) {
+    entradas = argList.args;
+    return *this;
+}
+//FcallExp::~FcallExp(){}
 IdentifierExp::IdentifierExp(const string& n):name(n) {}
 Exp::~Exp() {}
 BinaryExp::~BinaryExp() { delete left; delete right; }
