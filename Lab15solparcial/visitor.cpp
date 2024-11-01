@@ -1,7 +1,6 @@
 #include <iostream>
 #include "exp.h"
 #include "visitor.h"
-#include <unordered_map>
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -68,6 +67,26 @@ int Body::accept(Visitor* visitor) {
     return 0;
 }
 
+int FuncDec::accept(Visitor* visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+int FuncDecList::accept(Visitor* visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+int ParamDecList::accept(Visitor* visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+int ReturnStatement::accept(Visitor* visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////
 
 int PrintVisitor::visit(BinaryExp* exp) {
@@ -127,7 +146,8 @@ void PrintVisitor::visit(IfStatement* stm) {
 }
 
 void PrintVisitor::imprimir(Program* program){
-    program->body->accept(this);
+    program->vardecs->accept(this);
+    program->funcdecs->accept(this);
 };
 
 
@@ -187,10 +207,10 @@ void PrintVisitor::visit(StatementList* stm){
     }
 }
 
-void PrintVisitor::visit(Body* stm){
-    stm->vardecs->accept(this);
+void PrintVisitor::visit(Body* b){
+    b->vardecs->accept(this);
     cout << endl;
-    stm->slist->accept(this);
+    b->slist->accept(this);
 }
 
 
@@ -206,4 +226,33 @@ void PrintVisitor::visit(ArgList* argList) {
 }
 
 
+void PrintVisitor::visit(FuncDec* funcDec) {
+    std::cout << "fun " << funcDec->type << " " << funcDec->name << "(";
+    funcDec->params->accept(this); // Imprime los parámetros
+    std::cout << ")\n";
+    funcDec->body->accept(this); // Imprime el cuerpo
+    std::cout << std::endl;
+}
 
+void PrintVisitor::visit(FuncDecList* funcDecList) {
+    for (FuncDec* funcDec : funcDecList->funcdecs) {
+        funcDec->accept(this); // Imprime cada función
+    }
+    cout << endl;
+}
+
+void PrintVisitor::visit(ParamDecList* paramDecList) {
+    bool first = true;
+    for (size_t i = 0; i < paramDecList->types.size(); ++i) {
+        if (!first) std::cout << ", ";
+        first = false;
+        std::cout << paramDecList->types[i] << " " << paramDecList->params[i]; // Imprime cada parámetro
+    }
+}
+
+void PrintVisitor::visit(ReturnStatement* stm) {
+    std::cout << "return (";
+    if (stm->exp)
+        stm->exp->accept(this); // Imprime la expresión de retorno
+    cout << ")";
+}

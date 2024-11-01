@@ -1,8 +1,5 @@
 #ifndef VISITOR_H
 #define VISITOR_H
-#include "exp.h"
-#include "environment.h"
-#include <list>
 
 class BinaryExp;
 class NumberExp;
@@ -21,6 +18,10 @@ class StatementList;
 class Body;
 class Program;
 class ArgList;
+class FuncDecList;
+class FuncDec;
+class ParamDecList;
+class ReturnStatement;
 
 
 class Visitor {
@@ -41,6 +42,10 @@ public:
     virtual void visit(StatementList* stm) = 0;
     virtual void visit(Body* b) = 0;
     virtual void visit(ArgList* argList) = 0; // Declaración de visit para ArgList
+    virtual void visit(FuncDecList* funcDecList) = 0;
+    virtual void visit(FuncDec* funcDec) = 0;
+    virtual void visit(ParamDecList* paramDecList) = 0;
+    virtual void visit(ReturnStatement* stm) = 0;
 
 };
 
@@ -63,6 +68,11 @@ public:
     void visit(StatementList* stm) override;
     void visit(Body* b) override;
     void visit(ArgList* argList) override; // Declaración de visit para ArgList
+    void visit(FuncDecList* funcDecList) override;
+    void visit(FuncDec* funcDec) override;
+    void visit(ParamDecList* paramDecList) override;
+    void visit(ReturnStatement* stm) override;
+
 };
 
 

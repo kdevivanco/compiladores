@@ -44,6 +44,10 @@ std::ostream& operator << ( std::ostream& outs, const Token & tok )
         case Token::ENDFOR : outs << "TOKEN(ENDFOR)"; break;
         case Token::TRUE : outs << "TOKEN(TRUE)"; break;
         case Token::FALSE : outs << "TOKEN(FALSE)"; break;
+        case Token::FUN : outs << "TOKEN(FUN)"; break;
+        case Token::ENDFUN : outs << "TOKEN(ENDFUN)"; break;
+    case Token::RETURN : outs << "TOKEN(RETURN)"; break;
+    case Token::TYPE: outs << "TOKEN(TYPE)"; break;
         default: outs << "TOKEN(UNKNOWN)"; break;
     }
     return outs;

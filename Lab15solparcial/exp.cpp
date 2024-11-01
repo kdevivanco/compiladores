@@ -85,10 +85,11 @@ Body::~Body() {
 }
 
 
-Program::Program(Body* b): body(b) {}
+Program::Program(VarDecList* v, FuncDecList* f): vardecs(v), funcdecs(f) {}
 
 Program::~Program() {
-    delete body;
+    delete vardecs;
+    delete funcdecs;
 }
 Stm::~Stm() {}
 string Exp::binopToChar(BinaryOp op) {

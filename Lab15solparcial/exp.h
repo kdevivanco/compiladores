@@ -2,10 +2,9 @@
 #define EXP_H
 
 #include <string>
-#include <unordered_map>
 #include <list>
 #include "visitor.h"
-#include "arglist.h"
+#include <vector>
 using namespace std;
 enum BinaryOp { PLUS_OP, MINUS_OP, MUL_OP, DIV_OP,LT_OP, LE_OP, EQ_OP };
 
@@ -159,6 +158,15 @@ public:
     ~ForStatement();
 };
 
+class ReturnStatement : public Stm
+{
+public:
+    Exp* exp;
+    ReturnStatement() {};
+    int accept(Visitor* visitor);
+    ~ReturnStatement(){};
+};
+
 class VarDec {
 public:
     string type;
@@ -187,6 +195,54 @@ public:
 };
 
 
+class ParamDecList
+{
+public:
+    vector<string> types;
+    vector<string> params;
+    ParamDecList(){};
+    void add(const string& type, const string& param) {
+        types.push_back(type);
+        params.push_back(param);
+    }
+    int accept(Visitor* visitor);
+    ~ParamDecList(){};
+};
+
+class FuncDec
+{
+public:
+    string type;
+    string name;
+    ParamDecList* params;
+    Body* body;
+    FuncDec(string type, ParamDecList* params, string name, Body* body): type(std::move(type)), params(params), name(std::move(name)), body(body) {};
+    int accept(Visitor* visitor);
+    ~FuncDec()
+    {
+        delete params;
+    };
+};
+
+class FuncDecList
+{
+public:
+    list<FuncDec*> funcdecs;
+    FuncDecList()= default;
+    void add(FuncDec* funcdec)
+    {
+        funcdecs.push_back(funcdec);
+    };
+    int accept(Visitor* visitor);
+    ~FuncDecList()
+    {
+        for (auto f : funcdecs)
+        {
+            delete f;
+        }
+    };
+};
+
 class Body{
 public:
     VarDecList* vardecs;
@@ -198,12 +254,11 @@ public:
 
 class Program {
 public:
-    Body* body;
-    Program(Body* body);
+    VarDecList* vardecs;
+    FuncDecList* funcdecs;
+    Program(VarDecList* vardecs, FuncDecList* funcdecs);
     ~Program();
 };
-
-
 
 
 

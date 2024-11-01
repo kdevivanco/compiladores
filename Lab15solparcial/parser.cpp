@@ -1,10 +1,8 @@
 #include <iostream>
-#include <stdexcept>
 #include "token.h"
 #include "scanner.h"
 #include "exp.h"
 #include "parser.h"
-#include "arglist.h"
 
 using namespace std;
 
@@ -49,11 +47,124 @@ Parser::Parser(Scanner* sc):scanner(sc) {
     }
 }
 
-VarDec* Parser::parseVarDec() {
-    VarDec* vd = NULL;
-    if (match(Token::VAR)) {
+Body* Parser::parseBody() {
+    VarDecList* vdl = parseVarDecList();
+    StatementList* sl = parseStatementList();
+    return new Body(vdl, sl);
+}
+
+
+VarDecList* Parser::parseVarDecList() {
+    VarDecList* vdl = new VarDecList();
+    VarDec* aux;
+    aux = parseVarDec();
+    while (aux != nullptr) {
+        vdl->add(aux);
+        aux = parseVarDec();
+    }
+    return vdl;
+}
+
+FuncDecList* Parser::parseFuncDecList() {
+    FuncDecList* fdl = new FuncDecList();
+    FuncDec* aux;
+    aux = parseFuncDec();
+    while (aux != NULL) {
+        fdl->add(aux);
+        aux = parseFuncDec();
+    }
+    return fdl;
+}
+
+FuncDec* Parser::parseFuncDec() {
+    FuncDec* fd = nullptr;
+    if (match(Token::FUN)) {
+        if (!match(Token::TYPE)) {
+            cout << "Error: se esperaba un identificador después de 'fun'." << endl;
+            exit(1);
+        }
+        string type = previous->text;
         if (!match(Token::ID)) {
-            cout << "Error: se esperaba un identificador después de 'var'." << endl;
+            cout << "Error: se esperaba un identificador después de 'fun'." << endl;
+            exit(1);
+        }
+        string name = previous->text;
+        if (!match(Token::PI)) {
+            cout << "Error: se esperaba un '(' después del nombre de la función." << endl;
+            exit(1);
+        }
+        ParamDecList *params = parseParamDecList();
+        if (!match(Token::PD)) {
+            cout << "Error: se esperaba un ')' al final de la declaración de la función." << endl;
+            exit(1);
+        }
+        Body* b = parseBody();
+        if (!match(Token::ENDFUN)) {
+            cout << "Error: se esperaba 'endfun' al final de la declaración." << endl;
+            exit(1);
+        }
+        fd = new FuncDec(type, params,name,b);
+    }
+    return fd;
+}
+
+ParamDecList* Parser::parseParamDecList() {
+    ParamDecList* pdl = new ParamDecList();
+    if (match(Token::TYPE)) {
+        string type = previous->text;
+        if (!match(Token::ID)) {
+            cout << "Error: se esperaba un identificador después del tipo." << endl;
+            exit(1);
+        }
+        string id = previous->text;
+        pdl->add(type, id);
+        while (match(Token::COMA)) {
+            if (!match(Token::TYPE)) {
+                cout << "Error: se esperaba un tipo después de ','." << endl;
+                exit(1);
+            }
+            type = previous->text;
+            if (!match(Token::ID)) {
+                cout << "Error: se esperaba un identificador después del tipo." << endl;
+                exit(1);
+            }
+            id = previous->text;
+            pdl->add(type, id);
+        }
+    }
+    return pdl;
+}
+
+ReturnStatement* Parser::parseReturnStatement() {
+    ReturnStatement* rs = new ReturnStatement();
+
+    if (!match(Token::PI))
+    {
+        cout << "Error: se esperaba '(' después de 'return'." << endl;
+        exit(1);
+    }
+    if (!match(Token::PD))
+    {
+        Exp *exp = parseCExp();
+        if (exp) {
+            rs->exp = exp;
+        }
+
+        if (!match(Token::PD))
+        {
+            cout << "Error: se esperaba ')' después de la expresión." << endl;
+            exit(1);
+        }
+    }
+
+    return rs;
+}
+
+VarDec* Parser::parseVarDec() {
+    VarDec* vd = nullptr;
+    if (match(Token::VAR)) {
+        if (!match(Token::TYPE)) {
+            cout << "Error: se esperaba un identificador después de 'TYPE'." << endl;
             exit(1);
         }
         string type = previous->text;
@@ -79,16 +190,7 @@ VarDec* Parser::parseVarDec() {
     return vd;
 }
 
-VarDecList* Parser::parseVarDecList() {
-    VarDecList* vdl = new VarDecList();
-    VarDec* aux;
-    aux = parseVarDec();
-    while (aux != NULL) {
-        vdl->add(aux);
-        aux = parseVarDec();
-    }
-    return vdl;
-}
+
 
 StatementList* Parser::parseStatementList() {
     StatementList* sl = new StatementList();
@@ -100,16 +202,13 @@ StatementList* Parser::parseStatementList() {
 }
 
 
-Body* Parser::parseBody() {
-    VarDecList* vdl = parseVarDecList();
-    StatementList* sl = parseStatementList();
-    return new Body(vdl, sl);
-}
+
 
 
 Program* Parser::parseProgram() {
-    Body* b = parseBody();
-    return new Program(b);
+    VarDecList* vdl = parseVarDecList();
+    FuncDecList* fdl = parseFuncDecList();
+    return new Program(vdl, fdl);
 }
 
 list<Stm*> Parser::parseStmList() {
@@ -126,6 +225,7 @@ Stm* Parser::parseStatement() {
     Exp* e = NULL;
     Body* tb = NULL; //true case
     Body* fb = NULL; //false case
+
 
     if (current == NULL) {
         cout << "Error: Token actual es NULL" << endl;
@@ -213,8 +313,11 @@ Stm* Parser::parseStatement() {
         }
         s = new ForStatement(start, end, step, tb);
     }
+    else if (match(Token::RETURN)) {
+        s = parseReturnStatement();
+    }
     else {
-        cout << "Error: Se esperaba un identificador o 'print', pero se encontró: " << *current << endl;
+        cout << "Error: se esperaba un identificador o 'print', pero se encontró: " << *current << endl;
         exit(1);
     }
     return s;
@@ -285,22 +388,28 @@ Exp* Parser::parseFactor() {
     } else if (match(Token::ID)) {
         string nombre = previous->text;
 
-        if (match(Token::PI)) { // Llamada a función detectada
+        if (match(Token::PI))
+        {
+            // Llamada a función detectada
+            Exp* e1;
             FcallExp* fcall = new FcallExp();
-            ArgList argList; // Crear un ArgList temporal
-            fcall->nombre = nombre;
+            if(!match(Token::PD)){
+                e1 = parseCExp();
 
-            if (!match(Token::PD)) { // Verifica si hay argumentos
-                argList.addArgument(parseCExp()); // Primer argumento
+                fcall->nombre = nombre;
+                fcall->entradas.push_back(e1);
+
                 while (match(Token::COMA)) { // Continúa con más argumentos si los hay
-                    argList.addArgument(parseCExp());
+                    e1 = parseCExp();
+                    fcall->entradas.push_back(e1);
                 }
-                match(Token::PD); // Cierra paréntesis derecho
+                match(Token::PD);
             }
 
-            *fcall = argList; // Usa la sobrecarga de operador `=` para asignar los argumentos
             return fcall;
-        } else {
+        }
+        else
+        {
             return new IdentifierExp(nombre); // Variable, no función
         }
     } else if (match(Token::IFEXP)) {

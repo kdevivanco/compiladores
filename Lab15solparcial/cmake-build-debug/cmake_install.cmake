@@ -1,4 +1,4 @@
-# Install script for directory: /Users/macbookpro/Desktop/UTEC/2024-2/Compiladores/Lab15solparcial
+# Install script for directory: /Users/roger/mau/uni/compi/repo_kayla/Lab15solparcial
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/macbookpro/Desktop/UTEC/2024-2/Compiladores/Lab15solparcial/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/roger/mau/uni/compi/repo_kayla/Lab15solparcial/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
